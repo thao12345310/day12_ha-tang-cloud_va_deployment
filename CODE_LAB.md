@@ -167,6 +167,7 @@ curl http://localhost:8000/ask -X POST \
 ```bash
 docker images my-agent:develop
 ```
+413MB
 
 ###  Exercise 2.3: Multi-stage build
 
