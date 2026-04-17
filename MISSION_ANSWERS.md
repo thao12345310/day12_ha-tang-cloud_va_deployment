@@ -638,5 +638,5 @@ docker build -f 06-lab-complete/Dockerfile -t my-agent:production .
 | Security | 20/20 | Auth (`auth.py`) + Rate limit (`rate_limiter.py`) + Cost guard (`cost_guard.py`) |
 | Reliability | 20/20 | Health checks + Readiness probe + Graceful shutdown (SIGTERM + lifespan) |
 | Scalability | 15/15 | Stateless design + Redis + Docker Compose |
-| Deployment | 10/10 | railway.toml + render.yaml configured, public URL ready |
+| Deployment | 10/10 | railway.toml + render.yaml configured, deployed at https://day12ha-tang-cloudvadeployment-production-128b.up.railway.app |
 | **Total** | **100/100** | |

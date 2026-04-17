@@ -1,5 +1,8 @@
 # Deployment Information
 
+## Public URL
+🔗 **https://day12ha-tang-cloudvadeployment-production-128b.up.railway.app**
+
 ## Platform
 Railway (với Dockerfile builder)
 
@@ -11,40 +14,47 @@ Railway (với Dockerfile builder)
 builder = "DOCKERFILE"
 
 [deploy]
-startCommand = "uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 2"
 healthcheckPath = "/health"
-healthcheckTimeout = 30
+healthcheckTimeout = 60
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
 ```
 
-## Test Commands
+## Live Test Results
+
+### Root Info
+```bash
+curl https://day12ha-tang-cloudvadeployment-production-128b.up.railway.app/
+# ✅ {"app":"Production AI Agent","version":"1.0.0","environment":"production","endpoints":{...}}
+```
 
 ### Health Check
 ```bash
-curl https://<your-app>.railway.app/health
-# Expected: {"status": "ok", "version": "1.0.0", ...}
-```
-
-### API Test (with authentication)
-```bash
-curl -X POST https://<your-app>.railway.app/ask \
-  -H "X-API-Key: YOUR_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"question": "Hello"}'
-# Expected: {"question": "Hello", "answer": "...", "model": "gpt-4o-mini", ...}
+curl https://day12ha-tang-cloudvadeployment-production-128b.up.railway.app/health
+# ✅ {"status":"ok","version":"1.0.0","environment":"production","uptime_seconds":254.8,...}
 ```
 
 ### Readiness Check
 ```bash
-curl https://<your-app>.railway.app/ready
-# Expected: {"ready": true}
+curl https://day12ha-tang-cloudvadeployment-production-128b.up.railway.app/ready
+# ✅ {"ready":true}
 ```
 
-### Root Info
+### API Test (with authentication)
 ```bash
-curl https://<your-app>.railway.app/
-# Expected: {"app": "Production AI Agent", "version": "1.0.0", ...}
+curl -X POST https://day12ha-tang-cloudvadeployment-production-128b.up.railway.app/ask \
+  -H "X-API-Key: <YOUR_KEY>" \
+  -H "Content-Type: application/json" \
+  -d '{"question": "Hello"}'
+# ✅ Returns answer with authentication
+```
+
+### Auth Rejection (no key)
+```bash
+curl -X POST https://day12ha-tang-cloudvadeployment-production-128b.up.railway.app/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "Hello"}'
+# ✅ {"detail":"Invalid or missing API key. Include header: X-API-Key: <key>"}
 ```
 
 ## Environment Variables Set
@@ -56,7 +66,6 @@ curl https://<your-app>.railway.app/
 - `LLM_MODEL` — gpt-4o-mini
 - `RATE_LIMIT_PER_MINUTE` — 20
 - `DAILY_BUDGET_USD` — 5.0
-- `REDIS_URL` — Railway Redis add-on URL (if provisioned)
 
 ## Docker Image Details
 - **Base:** `python:3.11-slim` (multi-stage build)
@@ -68,7 +77,7 @@ curl https://<your-app>.railway.app/
 - ✅ API Key authentication (`X-API-Key` header)
 - ✅ Rate limiting (20 req/min per user)
 - ✅ Cost guard ($5/day budget)
-- ✅ Security headers (nosniff, DENY frame, XSS protection)
+- ✅ Security headers (nosniff, DENY frame)
 - ✅ No hardcoded secrets
 - ✅ Non-root container user
 - ✅ `.env` files in `.gitignore`
