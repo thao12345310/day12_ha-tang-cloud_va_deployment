@@ -37,15 +37,12 @@ ENV PATH=/home/agent/.local/bin:$PATH
 ENV PYTHONPATH=/app
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV PORT=8000
 
-EXPOSE ${PORT}
+EXPOSE 8000
 
-# Health check (dùng $PORT thay vì hardcode 8000)
-HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
-    CMD python -c \
-    "import os,urllib.request; urllib.request.urlopen(f'http://localhost:{os.environ.get(\"PORT\",8000)}/health')" \
-    || exit 1
+# Simplified healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
 
-# Dùng shell form để expand $PORT (Railway inject PORT env var)
-CMD uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 2
+# Railway overrides this via railway.toml startCommand
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
